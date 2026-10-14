@@ -9,3 +9,7 @@ It builds the following rom:
 To set up the repository, see [INSTALL.md](INSTALL.md).
 
 For contacts and other pret projects, see [pret.github.io](https://pret.github.io/).
+
+# References for patch creation
+
+https://www.romhacking.net/hacks/6256/
