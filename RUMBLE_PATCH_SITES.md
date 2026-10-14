@@ -16,10 +16,11 @@ The Omega DE rumble code is gated by the Makefile variable `OMEGA_DE_RUMBLE`.
   intermediate objects under `build/pokepinballrs_omega_de_rumble/`.
 
 When disabled (the default), the source compiles back to the original upstream
-behavior, `src/omegade_rumble.s` is excluded from the object list, and the
-generated linker script matches the original object order. When enabled, all
-15 patch sites below are active and the Omega DE helper text is linked
-immediately after `src/gbplayer.o(.text)`.
+behavior, `src/omegade_rumble.c` is excluded from the object list, and the
+generated linker script matches the original object order. When enabled, the
+ROM header exposes named cartridge GPIO fields, all 15 patch sites below are
+active, and the Omega DE helper text is linked immediately after
+`src/gbplayer.o(.text)`.
 
 ## Reference and acknowledgement
 
@@ -47,14 +48,13 @@ published as [Romhacking.net Hack #6256](https://www.romhacking.net/hacks/6256/)
 
 ## Helper functions
 
-- `EmitOmegaDEPulse()` (`src/omegade_rumble.s`) - Thumb assembly routine that
-  performs the exact 16-bit and 8-bit writes documented for the Omega DE pulse,
-  followed by exactly four `nop` instructions. Implemented in assembly so the
-  instruction sequence and timing match the known-working IPS payload.
-- `StopCartridgeRumble()` (`src/gbplayer.c`) - writes volatile byte `0` to
-  `0x080000C4`.
-- `InitCartridgeRumble()` (`src/omegade_rumble.s`) - Thumb assembly routine that
-  writes `1` to `0x080000C8` and `8` to `0x080000C6`. It is a no-op when
+- `EmitOmegaDEPulse()` (`src/omegade_rumble.c`) - performs the documented
+  volatile Omega DE unlock, command, and latch writes, followed by exactly four
+  `nop` instructions.
+- `StopCartridgeRumble()` (`src/omegade_rumble.c`) - clears the named
+  `GPIOPortData` field.
+- `InitCartridgeRumble()` (`src/omegade_rumble.c`) - enables GPIO reads through
+  `GPIOPortReadEnable` and sets `GPIOPortDirection` to `8`. It is a no-op when
   `gGameBoyPlayerEnabled == TRUE` so the real GBP path is unaffected.
 - `SetRumbleCommand(command)` (`src/gbplayer.c`) - stores `command` into
   `gRumbleCommand` and emits the Omega DE pulse only when `!GBP && command == 2`.
@@ -64,9 +64,13 @@ published as [Romhacking.net Hack #6256](https://www.romhacking.net/hacks/6256/)
 
 - `gGameBoyPlayerEnabled` is never forced to `TRUE`; it remains the result of
   `CheckGameBoyPlayer()`.
-- All `0x08xxxxxx` and `0x09xxxxxx` accesses in the helpers are `volatile` and
-  use the exact width (`vu8` / `vu16`) specified by the reference patch.
-- `StopCartridgeRumble()` (the only write to `0x080000C4`) is reached from
+- Feature builds expose `GPIOPortData`, `GPIOPortDirection`, and
+  `GPIOPortReadEnable` at the cartridge GPIO addresses in the ROM-header
+  extension. C code refers to these named fields, so later source layout edits
+  do not embed assumptions about where startup code happens to be linked.
+- All fixed Omega DE control-port accesses are named and `volatile`, and use
+  the width (`vu8` / `vu16`) specified by the reference patch.
+- `StopCartridgeRumble()` (the only write to `GPIOPortData`) is reached from
   `DisableGbPlayerRumble` and the inactive-pattern branch of
   `ProcessRumbleFrame`. The odd-frame speed-mode command-zero transition does
   not produce a physical stop write.

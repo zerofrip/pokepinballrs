@@ -67,6 +67,7 @@ CPPFLAGS := -I tools/agbcc/include -I tools/agbcc -iquote include -nostdinc -und
 
 ifeq ($(OMEGA_DE_RUMBLE),1)
 CPPFLAGS += -DFEATURE_OMEGA_DE_RUMBLE
+ASFLAGS += --defsym FEATURE_OMEGA_DE_RUMBLE=1
 endif
 
 LDFLAGS = -Map ../../$(MAP)
@@ -109,13 +110,13 @@ endif
 
 $(shell mkdir -p $(C_BUILDDIR) $(ASM_BUILDDIR) $(DATA_ASM_BUILDDIR))
 
-C_SRCS := $(wildcard $(C_SUBDIR)/*.c)
+C_SRCS := $(filter-out $(C_SUBDIR)/omegade_rumble.c,$(wildcard $(C_SUBDIR)/*.c))
+ifeq ($(OMEGA_DE_RUMBLE),1)
+C_SRCS += $(C_SUBDIR)/omegade_rumble.c
+endif
 C_OBJS := $(patsubst $(C_SUBDIR)/%.c,$(C_BUILDDIR)/%.o,$(C_SRCS))
 
-C_ASM_SRCS := $(filter-out $(C_SUBDIR)/omegade_rumble.s,$(wildcard $(C_SUBDIR)/*.s))
-ifeq ($(OMEGA_DE_RUMBLE),1)
-C_ASM_SRCS += $(C_SUBDIR)/omegade_rumble.s
-endif
+C_ASM_SRCS := $(wildcard $(C_SUBDIR)/*.s)
 C_ASM_OBJS := $(patsubst $(C_SUBDIR)/%.s,$(C_BUILDDIR)/%.o,$(C_ASM_SRCS))
 
 ASM_SRCS := $(wildcard $(ASM_SUBDIR)/*.s)

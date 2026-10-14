@@ -40,3 +40,23 @@ RomHeaderChecksum:
 
 RomHeaderReserved2:
 	.space 2
+
+	.ifdef FEATURE_OMEGA_DE_RUMBLE
+	@ Cartridge GPIO fields occupy fixed ROM-header extension addresses.
+	.word 0
+
+	.global GPIOPortData
+GPIOPortData:
+	.2byte 0
+
+	.global GPIOPortDirection
+GPIOPortDirection:
+	.2byte 0
+
+	.global GPIOPortReadEnable
+GPIOPortReadEnable:
+	.2byte 0
+
+	.2byte 0
+	.space 0x34
+	.endif

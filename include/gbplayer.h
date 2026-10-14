@@ -6,6 +6,8 @@
 void InitGameBoyPlayer(void);
 #ifdef FEATURE_OMEGA_DE_RUMBLE
 void InitCartridgeRumble(void);
+void StopCartridgeRumble(void);
+void EmitOmegaDEPulse(void);
 #endif
 u32 Sio32EncodePacket(u32 arg1, u32 arg2);
 u32 Sio32VerifyChecksum(void);

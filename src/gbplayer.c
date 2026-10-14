@@ -36,15 +36,6 @@ EWRAM_DATA u32 gSio32RemoteDeviceId;
 // -----
 
 #ifdef FEATURE_OMEGA_DE_RUMBLE
-void EmitOmegaDEPulse(void);
-#endif
-
-#ifdef FEATURE_OMEGA_DE_RUMBLE
-static void StopCartridgeRumble(void)
-{
-    *(vu8 *)0x080000C4 = 0;
-}
-
 static void SetRumbleCommand(int command)
 {
     gRumbleCommand = command;
