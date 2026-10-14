@@ -9,6 +9,7 @@ COMPARE ?= 0
 
 ifeq (compare,$(MAKECMDGOALS))
   COMPARE := 1
+  override OMEGA_DE_RUMBLE := 0
 endif
 
 PREFIX := arm-none-eabi-
@@ -37,7 +38,7 @@ HOST_VARS := CC=$(HOSTCC) CXX=$(HOSTCXX) CFLAGS='$(HOSTCFLAGS)' CXXFLAGS='$(HOST
 
 SHELL := /bin/bash -o pipefail
 
-OMEGA_DE_RUMBLE ?= 0
+OMEGA_DE_RUMBLE ?= 1
 
 ifeq ($(OMEGA_DE_RUMBLE),1)
 ROM := pokepinballrs_omega_de_rumble.gba

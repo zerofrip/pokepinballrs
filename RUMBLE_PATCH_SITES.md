@@ -10,12 +10,14 @@ register accesses happen only on the non-GBP path.
 
 The Omega DE rumble code is gated by the Makefile variable `OMEGA_DE_RUMBLE`.
 
-- Default (vanilla): `make rom` produces `pokepinballrs.gba`.
-- Feature build: `make OMEGA_DE_RUMBLE=1 rom` produces
+- Default (Omega DE rumble): `make` or `make rom` produces
   `pokepinballrs_omega_de_rumble.gba` in the repository root and keeps its
   intermediate objects under `build/pokepinballrs_omega_de_rumble/`.
+- Vanilla build: `make OMEGA_DE_RUMBLE=0 rom` produces `pokepinballrs.gba`.
+- Vanilla comparison: `make compare` forces the vanilla configuration and
+  verifies `pokepinballrs.gba` against `pokepinballrs.sha1`.
 
-When disabled (the default), the source compiles back to the original upstream
+When explicitly disabled, the source compiles back to the original upstream
 behavior, `src/omegade_rumble.c` is excluded from the object list, and the
 generated linker script matches the original object order. When enabled, the
 ROM header exposes named cartridge GPIO fields, all 15 patch sites below are
